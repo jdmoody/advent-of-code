@@ -48,6 +48,12 @@ func (computer *Computer) Set(address int, value int) {
 	computer.memory[address] = value
 }
 
+// Reset - Resets the memory
+func (computer *Computer) Reset(newMemory []int) {
+	computer.instructionPointer = 0
+	computer.memory = newMemory
+}
+
 // New - Creates a new intcode Computer
 func New(memory []int, instructions instructions) Computer {
 	return Computer{

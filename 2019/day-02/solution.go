@@ -8,7 +8,7 @@ import (
 	"github.com/jdmoody/advent-of-code/2019/intcode"
 )
 
-func main() {
+func getOpcodes() []int {
 	input, _ := ioutil.ReadFile("./input.txt")
 	var stringOpcodes []string = strings.Split(string(input), ",")
 	var opcodes []int
@@ -17,6 +17,12 @@ func main() {
 		code, _ := strconv.Atoi(stringCode)
 		opcodes = append(opcodes, code)
 	}
+
+	return opcodes
+}
+
+func main() {
+	var opcodes = getOpcodes()
 	opcodes[1] = 12
 	opcodes[2] = 2
 
@@ -46,4 +52,21 @@ func main() {
 
 	computer.Run()
 	println(computer.Get(0))
+
+Loop:
+	for noun := 0; noun < 100; noun++ {
+		for verb := 0; verb < 100; verb++ {
+			var ops = getOpcodes()
+			ops[1] = noun
+			ops[2] = verb
+			computer.Reset(ops)
+
+			computer.Run()
+
+			if computer.Get(0) == 19690720 {
+				println(100*noun + verb)
+				break Loop
+			}
+		}
+	}
 }
