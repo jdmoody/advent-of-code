@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/jdmoody/advent-of-code/intcode_computer"
+	"github.com/jdmoody/advent-of-code/2019/intcode"
 )
 
 func main() {
@@ -20,46 +20,30 @@ func main() {
 	opcodes[1] = 12
 	opcodes[2] = 2
 
-	type Operation int
+	var computer intcode.Computer = intcode.New(opcodes, map[int]intcode.Instruction{
+		1: func(computer *intcode.Computer) bool {
+			var a = computer.ReadNext()
+			var b = computer.ReadNext()
+			var resultAddr = computer.ReadNext()
 
-	const (
-		Add Operation = iota
-		Multiply
-	)
+			computer.Set(resultAddr, computer.Get(a)+computer.Get(b))
 
-	var op Operation
-	var a int
-	var b int
+			return true
+		},
+		2: func(computer *intcode.Computer) bool {
+			var a = computer.ReadNext()
+			var b = computer.ReadNext()
+			var resultAddr = computer.ReadNext()
 
-Loop:
-	for i, code := range opcodes {
-		var c, _ = strconv.Atoi(code)
+			computer.Set(resultAddr, computer.Get(a)*computer.Get(b))
 
-		switch i % 4 {
-		case 0:
-			switch code {
-			case "99":
-				break Loop
-			case "1":
-				op = Add
-			case "2":
-				op = Multiply
-			default:
-				println("ERROR")
-			}
-		case 1:
-			a, _ = strconv.Atoi(opcodes[c])
-		case 2:
-			b, _ = strconv.Atoi(opcodes[c])
-		case 3:
-			switch op {
-			case Add:
-				opcodes[c] = strconv.Itoa(a + b)
-			case Multiply:
-				opcodes[c] = strconv.Itoa(a * b)
-			}
-		}
-	}
+			return true
+		},
+		99: func(computer *intcode.Computer) bool {
+			return false
+		},
+	})
 
-	println(opcodes[0])
+	computer.Run()
+	println(computer.Get(0))
 }
