@@ -7,7 +7,7 @@ import (
 func main() {
 	opcodes := intcode.GetOpcodes("day-05")
 
-	var computer intcode.Computer = intcode.New(opcodes)
+	var computer intcode.Computer = intcode.New(opcodes, 5)
 
 	computer.Run()
 }

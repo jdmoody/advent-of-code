@@ -35,7 +35,13 @@ var inst = map[int]instruction{
 	3: func(computer *Computer) bool {
 		var val int
 		println("Enter integer: ")
-		fmt.Scan(&val)
+		if len(computer.inputs) > 0 {
+			val = computer.inputs[0]
+			println(val)
+			computer.inputs = computer.inputs[1:]
+		} else {
+			fmt.Scan(&val)
+		}
 
 		addr := computer.readNext()
 		computer.set(addr, val)
@@ -122,6 +128,7 @@ type Computer struct {
 	instructions       instructions
 	memory             []int
 	modes              []computerMode
+	inputs             []int
 }
 
 // Run - Runs the IntcodeComputer returns true if successfully halted, otherwise returns false
@@ -157,9 +164,10 @@ func (computer *Computer) Get(address int) int {
 }
 
 // Reset - Resets the memory
-func (computer *Computer) Reset(newMemory []int) {
+func (computer *Computer) Reset(newMemory []int, inputs ...int) {
 	computer.instructionPointer = 0
 	computer.memory = newMemory
+	computer.inputs = inputs
 }
 
 // readNext - Returns the next value in memory
@@ -196,12 +204,13 @@ func (computer *Computer) set(address int, value int) {
 }
 
 // New - Creates a new intcode Computer
-func New(memory []int) Computer {
+func New(memory []int, inputs ...int) Computer {
 	return Computer{
 		instructionPointer: 0,
 		instructions:       inst,
 		memory:             memory,
 		modes:              []computerMode{},
+		inputs:             inputs,
 	}
 }
 
