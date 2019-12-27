@@ -52,6 +52,8 @@ func countOrbits(orbits orbitMap, mass string, initCount int) int {
 }
 
 func findMinTransfers(orbits orbitMap) int {
+	totalSteps := 0
+
 	youPath := map[string]int{}
 	youParent := orbits["YOU"].parent
 	youSteps := 0
@@ -68,14 +70,15 @@ func findMinTransfers(orbits orbitMap) int {
 		youSteps, found := youPath[sanParent]
 
 		if found {
-			return youSteps + sanSteps
+			totalSteps = youSteps + sanSteps
+			break
 		}
 
 		sanParent = orbits[sanParent].parent
 		sanSteps++
 	}
 
-	return 0
+	return totalSteps
 }
 
 func main() {
