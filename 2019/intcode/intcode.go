@@ -1,6 +1,7 @@
 package intcode
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"math"
@@ -34,10 +35,10 @@ var inst = map[int]instruction{
 	// input
 	3: func(computer *Computer) bool {
 		var val int
-		println("Enter integer: ")
+		// println("Enter integer: ")
 		if len(computer.inputs) > 0 {
 			val = computer.inputs[0]
-			println(val)
+			// println(val)
 			computer.inputs = computer.inputs[1:]
 		} else {
 			fmt.Scan(&val)
@@ -52,7 +53,7 @@ var inst = map[int]instruction{
 	// output
 	4: func(computer *Computer) bool {
 		addr := computer.getParam()
-		println("Output: ", addr)
+		fmt.Fprintln(&computer.output, addr)
 
 		return true
 	},
@@ -129,6 +130,7 @@ type Computer struct {
 	memory             []int
 	modes              []computerMode
 	inputs             []int
+	output             bytes.Buffer
 }
 
 // Run - Runs the IntcodeComputer returns true if successfully halted, otherwise returns false
@@ -163,11 +165,21 @@ func (computer *Computer) Get(address int) int {
 	return computer.memory[address]
 }
 
+// GetOutput - Returns the current output buffer value
+func (computer *Computer) GetOutput() int {
+	var val int
+
+	fmt.Sscan(computer.output.String(), &val)
+
+	return val
+}
+
 // Reset - Resets the memory
 func (computer *Computer) Reset(newMemory []int, inputs ...int) {
 	computer.instructionPointer = 0
 	computer.memory = newMemory
 	computer.inputs = inputs
+	computer.output = *bytes.NewBuffer([]byte{})
 }
 
 // readNext - Returns the next value in memory
@@ -211,6 +223,7 @@ func New(memory []int, inputs ...int) Computer {
 		memory:             memory,
 		modes:              []computerMode{},
 		inputs:             inputs,
+		output:             *bytes.NewBuffer([]byte{}),
 	}
 }
 
